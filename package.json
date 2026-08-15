@@ -1,11 +1,14 @@
 {
-  "name": "ai-agent-js-v2",
-  "version": "0.1.0",
-  "description": "AI Agent 實作工作坊（JavaScript 版）",
+  "name": "homework2-calculator-tool",
+  "version": "1.0.0",
+  "description": "作業 2：新增 Function Calling 計算機工具。",
   "type": "module",
   "main": "main.js",
-    "scripts": {
-    "start": "node main.js"
+  "scripts": {
+    "start": "node main.js",
+    "test:calculator": "node scripts/test-calculator.js",
+    "demo": "node function_call.js",
+    "check": "node --check config.js && node --check main.js && node --check function_call.js && node --check lib/openai.js && node --check lib/chat-manager.js && node --check tools/calculate.js && node --check tools/index.js && node --check utils/func-tool.js && node --check utils/spinner.js && node --check scripts/test-calculator.js"
   },
   "engines": {
     "node": ">=22.0.0"
@@ -13,7 +16,6 @@
   "dependencies": {
     "@inquirer/prompts": "^8.4.3",
     "dotenv": "^17.4.2",
-    "lowdb": "^7.0.1",
     "openai": "^6.38.0",
     "ora": "^9.4.0",
     "zod": "^4.4.3"

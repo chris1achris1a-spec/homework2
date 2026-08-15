@@ -1,37 +1,27 @@
 import { input } from "@inquirer/prompts";
-import OpenAI from "openai";
-import { OPENAI_API_KEY } from "./config.js";
-import { initMessage, addMessage, getMessages } from "./db/messages.js";
-
-const client = new OpenAI({ apiKey: OPENAI_API_KEY });
-
-await initMessage(
-  "你是一位專門講關於貓的笑話大師，請用繁體中文回答。請用幽默有趣的方式回應。"
-);
+import { askCalculatorAssistant } from "./lib/chat-manager.js";
+import { spinner } from "./utils/spinner.js";
 
 try {
   while (true) {
-    const userQuestion = (
-      await input({ message: "請輸入你的問題：" })
-    ).trim();
-
+    const userQuestion = (await input({ message: "請輸入你的計算問題：" })).trim();
     if (userQuestion === "") continue;
     if (userQuestion.toLowerCase() === "exit") {
       console.log("再會~");
       break;
     }
 
-    await addMessage(userQuestion);
+    const spin = spinner("思考中...").start();
+    const result = await askCalculatorAssistant(userQuestion, { verbose: false });
+    spin.stop();
 
-    const response = await client.responses.create({
-      model: "gpt-5.6-luna",
-      input: getMessages(),
-    });
+    for (const call of result.toolCalls) {
+      console.log(`[已呼叫工具] ${call.name}(${JSON.stringify(call.args)})`);
+      console.log(`[工具結果] ${JSON.stringify(call.result)}`);
+    }
 
-    const content = response.output_text;
-    console.log(content);
-
-    await addMessage(content, "assistant");
+    console.log(result.answer);
+    console.log();
   }
 } catch (err) {
   if (err.name === "ExitPromptError") {
